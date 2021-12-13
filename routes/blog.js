@@ -1,6 +1,9 @@
 // import express
 const express = require("express");
 
+// import mysql module from database.js
+const db = require("../data/database");
+
 // call router
 const router = express.Router();
 
@@ -18,9 +21,12 @@ router.get("/posts", function(req, res) {
 });
 
 // handle request to /new-post
-router.get("/new-post", function (req, res) {
+router.get("/new-post", async function (req, res) {
+  // use db query method - ASYNCHRONIC!
+  const [authors] = await db.query("SELECT * FROM authors");
   // serve create-post.ejs
-  res.render("create-post");
+  // pass data
+  res.render("create-post", { authors: authors});
 });
 
 // export router

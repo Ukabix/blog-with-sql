@@ -1,5 +1,5 @@
 // import mysql2
-const mysql = require("mysql2");
+const mysql = require("mysql2/promise");
 
 // create connection pool - JSON
 const pool = mysql.createPool({
