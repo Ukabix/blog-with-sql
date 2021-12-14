@@ -76,8 +76,20 @@ router.get("/posts/:id", async function (req, res) {
     return res.status(404).render("404");
   }
 
+  // handle better data formatting
+  const postData = {
+    ...posts[0],
+    date: posts[0].date.toISOString(),
+    humanReadableDate: posts[0].date.toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }),
+  };
+
   // render template
-  res.render("post-detail", { post: posts[0] });
+  res.render("post-detail", { post: postData });
 });
 
 // export router
