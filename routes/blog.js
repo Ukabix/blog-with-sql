@@ -60,5 +60,25 @@ router.post("/posts", async function (req, res) {
   res.redirect("/posts");
 });
 
+// handle request to dynamic post detail
+router.get("/posts/:id", async function (req, res) {
+  // make an sql query
+  const query = `
+    SELECT posts.*, authors.name AS author_name, authors.email AS author_email
+    FROM posts
+    INNER JOIN authors ON posts.author_id = authors.id
+    WHERE posts.id = ?
+  `;
+  // get placeholder id in array
+  const [posts] = await db.query(query, [req.params.id]);
+  // handle invalid manual input if post does not exist
+  if (!posts || posts.length === 0) {
+    return res.status(404).render("404");
+  }
+
+  // render template
+  res.render("post-detail", { post: posts[0] });
+});
+
 // export router
 module.exports = router;
