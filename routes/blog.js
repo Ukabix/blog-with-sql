@@ -92,5 +92,23 @@ router.get("/posts/:id", async function (req, res) {
   res.render("post-detail", { post: postData });
 });
 
+// handle request for post update
+router.get("/posts/:id/edit", async function(req, res){
+  // select all data for post
+  const query = `
+  SELECT * FROM posts
+  WHERE id = ?
+  `;
+  // get placeholder id in array
+  const [posts] = await db.query(query, [req.params.id]);
+  // handle invalid manual input if post does not exist
+  if (!posts || posts.length === 0) {
+    return res.status(404).render("404");
+  }
+  // render template
+  res.render("update-post", { post: posts [0]});
+});
+
+
 // export router
 module.exports = router;
