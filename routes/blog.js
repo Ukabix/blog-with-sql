@@ -15,9 +15,15 @@ router.get("/", function (req, res) {
 });
 
 // handle get request to /posts
-router.get("/posts", function (req, res) {
-  // serve post-lists.ejs
-  res.render("posts-list");
+router.get("/posts", async function (req, res) {
+  // improve readability
+  const query= `
+  SELECT posts.*, authors.name AS author_name FROM posts
+  INNER JOIN authors ON posts.author_id = authors.id`;
+  // fetch posts - ^ INNER JOIN because we want to display the author too + array destructure
+  const [posts] = await db.query(query);
+  // serve posts-lists.ejs
+  res.render("posts-list", { posts: posts });
 });
 
 // handle get request to /new-post
@@ -43,16 +49,15 @@ router.post("/posts", async function (req, res) {
     req.body.title,
     req.body.summary,
     req.body.content,
-    req.body.author
+    req.body.author,
   ];
   // mysql2 replaces ? with data from array passed as param
   await db.query(
-    "INSERT INTO posts (title, summary, body, author_id) VALUES (?)", [
-      data
-    ]);
-    // redirect to posts list after form submission
-    res.redirect("/posts");
-
+    "INSERT INTO posts (title, summary, body, author_id) VALUES (?)",
+    [data]
+  );
+  // redirect to posts list after form submission
+  res.redirect("/posts");
 });
 
 // export router
